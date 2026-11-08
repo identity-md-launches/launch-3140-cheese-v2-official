@@ -93,6 +93,22 @@ abstract contract CheeseBase is Test {
         core.settle(core.settledThroughRound() + 1, blocks, 0);
     }
 
+    /// @dev Shares deposited into a farm that already has stakers wait for the next pull that prices new
+    ///      Squeek blocks before they earn (the just-in-time staking fix). This certifies one block and pulls
+    ///      it, so every share deposited so far is active; that block's emission goes to the shares that were
+    ///      already active (`warmBlock()` of the pool's weight).
+    function warmUp(CheeseFarm farm) internal {
+        advanceBlocks(1);
+        address nobody = makeAddr("nobody");
+        vm.prank(nobody);
+        farm.claim(nobody);
+    }
+
+    /// @dev Emission of the one warm-up block for a pool of `weight` points.
+    function warmBlock(uint256 weight) internal pure returns (uint256) {
+        return (SqueekIssuance.issued(1) * weight) / 1000;
+    }
+
     function issued(uint64 b) internal pure returns (uint256) {
         return SqueekIssuance.issued(b);
     }

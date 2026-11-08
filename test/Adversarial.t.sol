@@ -495,12 +495,20 @@ contract AdversarialTest is CheeseBase {
         _checkBite(shares, amtA);
     }
 
+    /// @dev 14% stays, capped at 15/85 of the assets backing the remaining shares (what they will themselves
+    ///      pay the Treasury on exit); anything above the cap goes to the Treasury with the 1%.
+    function _expectedRetained(uint256 gross, uint256 shares) internal view returns (uint256 retained) {
+        uint256 cap = (ethFarm.convertToAssets(ethFarm.totalShares() - shares) * 1500) / 8500;
+        retained = (gross * 1400) / 10_000;
+        if (retained > cap) retained = cap;
+    }
+
     function _checkBite(uint256 shares, uint256 amtA) internal {
         uint256 aliceShares = ethFarm.sharesOf(alice);
         (uint256 gross, uint256 pPaid, uint256 pRetained, uint256 pTreasury) = ethFarm.previewWithdraw(shares);
         assertLe(gross, (amtA * shares) / aliceShares + 1, "no more than deposited");
         uint256 fee = (gross * 1500) / 10_000;
-        assertEq(pRetained, (gross * 1400) / 10_000, "14% retained");
+        assertEq(pRetained, _expectedRetained(gross, shares), "14% retained, capped at the remaining stake's own fee");
         assertEq(pTreasury, fee - pRetained, "1% to treasury");
         uint256 aliceBefore = alice.balance;
         uint256 treasuryBefore = treasury.balance;
@@ -560,6 +568,7 @@ contract AdversarialTest is CheeseBase {
         activateWithHistory(0);
         depositEth(alice, 1 ether);
         depositEth(bob, 1 ether);
+        warmUp(ethFarm); // bob's shares earn from the next priced pull on
         advanceBlocks(10);
         controller.checkpoint();
         vm.mockCall(address(core), abi.encodeWithSelector(ISqueekCore.state.selector), abi.encode(uint256(1)));
@@ -570,7 +579,7 @@ contract AdversarialTest is CheeseBase {
         ethFarm.deposit{value: 1 ether}();
         vm.prank(alice);
         uint256 claimed = ethFarm.claim(alice);
-        assertEq(claimed, (issued(10) * 200) / 1000 / 2);
+        assertApproxEqAbs(claimed, warmBlock(200) + ((issued(11) - issued(1)) * 200) / 1000 / 2, 2);
         uint256 balBefore = alice.balance;
         uint256 paid = withdrawAll(ethFarm, alice);
         assertEq(alice.balance - balBefore, paid);
@@ -621,6 +630,7 @@ contract AdversarialTest is CheeseBase {
         activateWithHistory(0);
         depositEth(alice, 1 ether);
         depositEth(bob, 1 ether);
+        warmUp(ethFarm); // bob's shares earn from the next priced pull on
         advanceBlocks(10);
         controller.checkpoint();
         vm.etch(address(core), hex"fe");
@@ -629,7 +639,7 @@ contract AdversarialTest is CheeseBase {
         uint256 paid = ethFarm.withdraw{gas: 30_000_000}(shares);
         assertEq(paid, 0.85 ether);
         vm.prank(bob);
-        assertEq(ethFarm.claim{gas: 30_000_000}(bob), (issued(10) * 200) / 1000 / 2);
+        assertApproxEqAbs(ethFarm.claim{gas: 30_000_000}(bob), ((issued(11) - issued(1)) * 200) / 1000 / 2, 2);
         vm.prank(owner);
         controller.pauseEmissions{gas: 30_000_000}();
         assertTrue(controller.emissionsPaused());

@@ -163,17 +163,29 @@ transfer ownership to an agent to get through setup. Future weight changes and n
 pools require the owner and a successful checkpoint; they affect future allocation
 only. The owner's ability to admit arbitrary pools is a documented trust assumption.
 
-## Withdrawal and reward behavior retained
+## Withdrawal and reward behavior
 
 Deposits have no fee. Withdrawals immediately return 85% of gross compounded
 principal, retain 14% for remaining shares and send 1% to Treasury, with integer
-rounding as in the audited source. When the last shares leave, the full 15% fee
-and residual principal dust go to Treasury. Shares are nontransferable and rewards
-are claimed separately. Treasury push failure defers its payment without blocking
-the user's payout. Core outages preserve withdrawal availability and known rewards;
-deposits wait for synchronization. Unreadable, unaccounted emission does not have
-historical share snapshots. See `docs/SECURITY.md` and `ADAPTATION.md` for the
-retained-fee, certification-timing and owner-control limitations.
+rounding as in the audited source. Two rules were added in the revision that fixed
+the reviewer's findings (see `ADAPTATION.md`):
+
+* The retained share is capped at 15/85 of the assets backing the remaining shares,
+  which is what those shares will themselves pay the Treasury on exit; anything
+  above the cap goes to the Treasury at once. A stake placed just before a large
+  exit can therefore never inherit more than its own fee.
+* Shares deposited into a farm that already has stakers earn nothing until the next
+  pull that prices new Squeek blocks (`waitingSharesOf`, `activeShares`). A deposit
+  mined just ahead of the Reporter's settle transaction earns nothing from that
+  round. Principal is never delayed: withdrawals burn waiting shares first.
+
+When the last shares leave, the full 15% fee and residual principal dust go to
+Treasury. Shares are nontransferable and rewards are claimed separately. Treasury
+push failure defers its payment without blocking the user's payout. Core outages
+preserve withdrawal availability and known rewards; deposits wait for
+synchronization. Unreadable, unaccounted emission does not have historical share
+snapshots. See `docs/SECURITY.md` and `ADAPTATION.md` for the remaining
+certification-timing and owner-control limitations.
 
 ## Deployment receipt deliverables
 

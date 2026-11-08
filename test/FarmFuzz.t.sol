@@ -34,17 +34,19 @@ contract FarmFuzzTest is CheeseBase {
         activateWithHistory(0);
         depositEth(alice, da);
         depositEth(bob, db);
+        warmUp(ethFarm); // bob's shares earn from the next priced pull on; the warm-up block is alice's
         advanceBlocks(n);
-        uint256 poolShare = (issued(n) * 200) / 1000;
+        uint256 poolShare = ((issued(n + 1) - issued(1)) * 200) / 1000;
+        uint256 warm = warmBlock(200);
         vm.prank(alice);
         uint256 ra = ethFarm.claim(alice);
         vm.prank(bob);
         uint256 rb = ethFarm.claim(bob);
-        assertLe(ra + rb, poolShare);
-        assertApproxEqAbs(ra + rb, poolShare, 2, "dust only");
+        assertLe(ra + rb, poolShare + warm);
+        assertApproxEqAbs(ra + rb, poolShare + warm, 3, "dust only");
         // ratio within rounding of the share ratio
-        uint256 expectedA = (poolShare * ethFarm.sharesOf(alice)) / ethFarm.totalShares();
-        assertApproxEqAbs(ra, expectedA, 2);
+        uint256 expectedA = (poolShare * ethFarm.sharesOf(alice)) / ethFarm.totalShares() + warm;
+        assertApproxEqAbs(ra, expectedA, 3);
         assertEq(cheese.balanceOf(alice), ra);
         assertEq(cheese.balanceOf(bob), rb);
     }

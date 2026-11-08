@@ -17,10 +17,19 @@ import {ICheeseFarm} from "./interfaces/ICheeseFarm.sol";
 ///                      shares immediately (no cooldown). 15% of the gross assets backing the burned shares
 ///                      is the Hamster Bite: 85% goes to the withdrawer, 14% stays in the farm (raising
 ///                      assets per share for everyone remaining), 1% goes to the Treasury. If no shares
-///                      remain, the whole 15% goes to the Treasury.
+///                      remain, the whole 15% goes to the Treasury. The retained share is capped at what
+///                      the remaining stake will itself return to the Treasury on exit (15/85 of the
+///                      assets backing the remaining shares); the excess goes to the Treasury now. A stake
+///                      placed just before a dominant exit can therefore never inherit more than its own
+///                      Hamster Bite, so front-running an exit is never profitable and the Treasury is
+///                      never short of the 15% once that stake leaves.
 ///         Rewards:     claimed separately from principal. The farm pulls the pool's accrued CHEESE from the
 ///                      controller before any share change, so new depositors never see earlier emission;
-///                      if the farm is empty, the controller forfeits the accrual instead of minting it.
+///                      if the farm has no eligible shares, the controller forfeits the accrual instead of
+///                      minting it. Emission reaches the farm in chunks (one per Reporter certification),
+///                      so shares deposited since the last pull that priced new Squeek blocks wait for the
+///                      next priced pull before they earn: a deposit mined just ahead of a certification
+///                      earns nothing from it. Principal is never delayed by this.
 ///         Reserves:    `totalAssets` (principal), `rewardReserve` (minted CHEESE) and `treasuryOwed` (fees
 ///                      the Treasury could not receive) are tracked internally and never read from balances,
 ///                      so donations cannot move the share price or be mistaken for rewards. The CHEESE farm
@@ -63,11 +72,20 @@ abstract contract CheeseFarm is Ownable2Step, ReentrancyGuard, ICheeseFarm {
     uint256 public rewardReserve; // CHEESE pulled from the controller, not yet claimed
     uint256 public treasuryOwed; // Hamster Bite share the Treasury could not receive; paid by payTreasury()
     uint256 public accRewardPerShare;
+    /// @notice Shares that earn emission: everything deposited before the last pull that priced new blocks.
+    uint256 public activeShares;
+    /// @notice Number of pulls that priced new Squeek blocks while shares were waiting. Shares deposited in
+    ///         epoch e start earning when epoch e + 1 begins.
+    uint256 public rewardEpoch;
+    uint256 internal _lastEmissionPerPoint; // controller accumulator seen at the farm's last pull
+    mapping(uint256 => uint256) internal _accAtEpoch; // accRewardPerShare when each epoch began
 
     mapping(address => uint256) public sharesOf;
-    mapping(address => uint256) internal _rewardDebt;
+    mapping(address => uint256) internal _rewardDebt; // for the account's active shares
     mapping(address => uint256) public claimedOf;
     mapping(address => uint256) internal _pendingOf; // harvested but unclaimed rewards
+    mapping(address => uint256) internal _waitingShares; // deposited since the last priced pull
+    mapping(address => uint256) internal _waitingEpoch; // epoch those shares were deposited in
 
     event Deposited(address indexed account, uint256 assets, uint256 shares);
     event Withdrawn(
@@ -188,10 +206,21 @@ abstract contract CheeseFarm is Ownable2Step, ReentrancyGuard, ICheeseFarm {
         shares = _convertToShares(received);
         if (shares == 0) revert ZeroShares();
 
+        bool wasEmpty = totalShares == 0;
         totalAssets += received;
         totalShares += shares;
         sharesOf[msg.sender] += shares;
-        _rewardDebt[msg.sender] = _debtFor(sharesOf[msg.sender]);
+        if (wasEmpty) {
+            // Nobody is staked, so there is nobody to dilute: the first stake earns from the next pull.
+            activeShares = shares;
+            _rewardDebt[msg.sender] = _debtFor(sharesOf[msg.sender]);
+        } else {
+            // New shares wait for the next priced pull before they earn; the reward debt (set by
+            // _harvestDebt) covers the active shares only. After a harvest any waiting shares belong to
+            // the current epoch.
+            if (_waitingShares[msg.sender] == 0) _waitingEpoch[msg.sender] = rewardEpoch;
+            _waitingShares[msg.sender] += shares;
+        }
         emit Deposited(msg.sender, received, shares);
     }
 
@@ -208,12 +237,17 @@ abstract contract CheeseFarm is Ownable2Step, ReentrancyGuard, ICheeseFarm {
         uint256 gross = _convertToAssets(shares);
         uint256 fee = (gross * WITHDRAW_FEE_BPS) / BPS;
         paid = gross - fee;
-        uint256 retained = (gross * RETAINED_FEE_BPS) / BPS;
+        uint256 retained = _retainedFor(gross, shares);
         uint256 toTreasury = fee - retained;
 
+        // Waiting shares (not yet earning) are burned first; the debt tracks the active shares left.
+        uint256 waiting = _waitingShares[msg.sender];
+        uint256 fromWaiting = shares < waiting ? shares : waiting;
+        if (fromWaiting != 0) _waitingShares[msg.sender] = waiting - fromWaiting;
+        activeShares -= shares - fromWaiting;
         totalShares -= shares;
         sharesOf[msg.sender] = held - shares;
-        _rewardDebt[msg.sender] = _debtFor(held - shares);
+        _rewardDebt[msg.sender] = _debtFor(held - shares - (waiting - fromWaiting));
         if (totalShares == 0) {
             // Last depositor out: nobody remains to receive the retained share, so the whole fee goes to
             // the Treasury, together with whatever the virtual offset left in the reserve (retained fees
@@ -266,12 +300,16 @@ abstract contract CheeseFarm is Ownable2Step, ReentrancyGuard, ICheeseFarm {
         uint256 shares = sharesOf[account];
         if (shares == 0) return _pendingOf[account];
         uint256 acc = accRewardPerShare;
-        if (totalShares != 0 && registered) {
-            acc += (controller.previewPoolEmission(poolId) * ACC_PRECISION) / totalShares;
+        if (activeShares != 0 && registered) {
+            acc += (controller.previewPoolEmission(poolId) * ACC_PRECISION) / activeShares;
         }
-        uint256 owed = Math.mulDiv(shares, acc, ACC_PRECISION);
-        uint256 debt = _rewardDebt[account];
-        return _pendingOf[account] + (owed > debt ? owed - debt : 0);
+        return _pendingOf[account] + _earned(account, acc);
+    }
+
+    /// @notice Shares of `account` deposited since the last pull that priced new Squeek blocks. They back
+    ///         principal like any other share but earn nothing until the next priced pull.
+    function waitingSharesOf(address account) external view returns (uint256) {
+        return _waitingShares[account];
     }
 
     function convertToShares(uint256 assets) external view returns (uint256) {
@@ -296,7 +334,7 @@ abstract contract CheeseFarm is Ownable2Step, ReentrancyGuard, ICheeseFarm {
         gross = _convertToAssets(shares);
         uint256 fee = (gross * WITHDRAW_FEE_BPS) / BPS;
         paid = gross - fee;
-        retained = (gross * RETAINED_FEE_BPS) / BPS;
+        retained = _retainedFor(gross, shares);
         toTreasury = fee - retained;
         if (shares >= totalShares) {
             toTreasury = totalAssets - paid; // the fee plus the residual no share can reach
@@ -319,24 +357,65 @@ abstract contract CheeseFarm is Ownable2Step, ReentrancyGuard, ICheeseFarm {
     function _accrue() internal returns (bool synced) {
         if (!registered) return true;
         uint256 amount;
-        (amount, synced) = controller.pullRewards(poolId, totalShares != 0);
-        if (amount == 0) return synced;
-        rewardReserve += amount;
-        accRewardPerShare += (amount * ACC_PRECISION) / totalShares;
-        emit RewardsAccrued(amount, accRewardPerShare);
+        uint256 active = activeShares;
+        (amount, synced) = controller.pullRewards(poolId, active != 0);
+        if (amount != 0) {
+            rewardReserve += amount;
+            accRewardPerShare += (amount * ACC_PRECISION) / active;
+            emit RewardsAccrued(amount, accRewardPerShare);
+        }
+        // The controller's per-point accumulator moves exactly when new Squeek blocks are priced. A pull
+        // that saw it move ends the current epoch: shares that waited through it start earning now.
+        uint256 perPoint = controller.emissionPerPoint();
+        if (amount != 0 || perPoint != _lastEmissionPerPoint) {
+            _lastEmissionPerPoint = perPoint;
+            if (active != totalShares) {
+                uint256 epoch = rewardEpoch + 1;
+                rewardEpoch = epoch;
+                _accAtEpoch[epoch] = accRewardPerShare;
+                activeShares = totalShares;
+            }
+        }
     }
 
     /// @dev Moves `account`'s newly accrued rewards into its pending bucket; returns the full pending total.
     ///      Earned rewards floor and the debt ceils (see _debtFor), so an account's harvest never exceeds
-    ///      its exact share and the sum over all accounts never exceeds what the farm pulled.
+    ///      its exact share and the sum over all accounts never exceeds what the farm pulled. Waiting shares
+    ///      whose epoch has ended are merged into the active shares here.
     function _harvestDebt(address account) internal returns (uint256 pending) {
-        uint256 shares = sharesOf[account];
-        uint256 owed = Math.mulDiv(shares, accRewardPerShare, ACC_PRECISION);
-        uint256 debt = _rewardDebt[account];
-        uint256 earned = owed > debt ? owed - debt : 0;
-        _rewardDebt[account] = _debtFor(shares);
+        uint256 earned = _earned(account, accRewardPerShare);
+        uint256 waiting = _waitingShares[account];
+        if (waiting != 0 && _waitingEpoch[account] < rewardEpoch) _waitingShares[account] = 0;
+        _rewardDebt[account] = _debtFor(sharesOf[account] - _waitingShares[account]);
         pending = _pendingOf[account] + earned;
         _pendingOf[account] = pending;
+    }
+
+    /// @dev Rewards `account` has earned since its last harvest at accumulator `acc`: its active shares
+    ///      since the recorded debt, plus any waiting shares since the epoch they became active in.
+    function _earned(address account, uint256 acc) internal view returns (uint256 earned) {
+        uint256 waiting = _waitingShares[account];
+        uint256 owed = Math.mulDiv(sharesOf[account] - waiting, acc, ACC_PRECISION);
+        uint256 debt = _rewardDebt[account];
+        earned = owed > debt ? owed - debt : 0;
+        uint256 epoch = _waitingEpoch[account];
+        if (waiting != 0 && epoch < rewardEpoch) {
+            uint256 owedWaiting = Math.mulDiv(waiting, acc, ACC_PRECISION);
+            uint256 base = Math.mulDiv(waiting, _accAtEpoch[epoch + 1], ACC_PRECISION, Math.Rounding.Ceil);
+            if (owedWaiting > base) earned += owedWaiting - base;
+        }
+    }
+
+    /// @dev The part of a withdrawal's Hamster Bite that stays in the farm: 14% of `gross`, capped at what
+    ///      the remaining shares will themselves pay to the Treasury on exit (15/85 of the assets backing
+    ///      them). Whatever a remaining stake inherits is therefore at most its own future fee, so a stake
+    ///      placed to catch another's exit cannot profit and the Treasury is never left short of the 15%.
+    function _retainedFor(uint256 gross, uint256 shares) internal view returns (uint256 retained) {
+        retained = (gross * RETAINED_FEE_BPS) / BPS;
+        if (shares >= totalShares) return 0;
+        uint256 remainingAssets = _convertToAssets(totalShares - shares);
+        uint256 cap = Math.mulDiv(remainingAssets, WITHDRAW_FEE_BPS, BPS - WITHDRAW_FEE_BPS);
+        if (retained > cap) retained = cap;
     }
 
     /// @dev Reward debt for `shares` at the current accumulator, rounded up. The 512-bit product keeps the

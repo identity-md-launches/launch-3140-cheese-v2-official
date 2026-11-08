@@ -87,8 +87,8 @@
     {
       "contract": "CheeseFarmERC20",
       "artifact": "CheeseFarmERC20.sol/CheeseFarmERC20.json",
-      "creationKeccak256": "0xf919ccbb9116ac6a1fa7900462c74616f08f9c28bdcf444e0e65ed6d935a8b3e",
-      "runtimeTemplateKeccak256": "0x34d5392d4849494165c6cfcffadc033d151ab89905f8c82a194a098fd0e5b2f2",
+      "creationKeccak256": "0x41f06f1e2144ecb7bdde27e1ce5b96217edd09c32cb880c8f3f518cb50cc0365",
+      "runtimeTemplateKeccak256": "0x514c73440b00708e257bc2d0e3edba4b6beb1ff5db39b645ec16eafa23c1b5a9",
       "creationBytes": 8402,
       "runtimeBytes": 7837,
       "immutableGroups": 2,
@@ -103,8 +103,8 @@
     {
       "contract": "CheeseFarmETH",
       "artifact": "CheeseFarmETH.sol/CheeseFarmETH.json",
-      "creationKeccak256": "0x4206d17ed1f0752b1f02c7566b4190a218aa33367c044f66adf3f0506ed2041b",
-      "runtimeTemplateKeccak256": "0x08cf75d04037b58574dd3818c570bdd2cc0ba028eaadee276dbbf14261593f4f",
+      "creationKeccak256": "0xf7083924024ad677193658cdb6f266406ba15c61577a17160749692bc8925e46",
+      "runtimeTemplateKeccak256": "0x7da52128abc46a45bc3cc933451ddc4fc67dca54e1b0f88799417989592a0c72",
       "creationBytes": 7987,
       "runtimeBytes": 7548,
       "immutableGroups": 1,
@@ -119,8 +119,8 @@
     {
       "contract": "CheeseFarmSIMD",
       "artifact": "CheeseFarmSIMD.sol/CheeseFarmSIMD.json",
-      "creationKeccak256": "0x78273e05179b53c1fb080214379375b3bd4593e45962429949747ac602141f56",
-      "runtimeTemplateKeccak256": "0x747468b5b5cc6f650fce50a229b1c3e290a819837711d8338fad27308e1b7ec4",
+      "creationKeccak256": "0xbf8915b690efc02e1e45d7570b60dd2a6b3a4c5490894d8ba154f62ab2572c83",
+      "runtimeTemplateKeccak256": "0x65e41cd28ceea8b43eecf1c14f74aafb76ffa4bb545d50b187c0364e13a4145b",
       "creationBytes": 8446,
       "runtimeBytes": 8000,
       "immutableGroups": 1,

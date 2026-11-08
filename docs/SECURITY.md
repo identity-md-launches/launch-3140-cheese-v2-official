@@ -141,3 +141,16 @@ only from `msg.sender`, no initializers/upgrades, no uninitialized storage point
 - [ ] Slither / Mythril run (not available in this environment; verifier runs Slither)
 - [ ] Independent adversarial review
 - [ ] Source verification on Blockscout after the launch (`forge verify-contract`), by the deployer
+
+## Launch revision: reviewer findings fixed in `CheeseFarm`
+
+| # | Finding | Fix | Tests |
+|---|---|---|---|
+| R1 | A stake deposited just before a dominant exit (same block, no minimum, no lock) inherited the retained 14% and left with 85% of it; the Treasury received 0.31 ETH instead of 1.5 ETH on a 10 ETH sole-staker exit. | The retained share is capped at 15/85 of the assets backing the remaining shares, i.e. what those shares will themselves pay the Treasury on exit; the excess goes to the Treasury at once. A zero-duration stake can never net more than its own Hamster Bite, whatever block it arrived in. | `test/LaunchFindings.t.sol` (front-run, honest remaining stakers, cap formula, fuzz), `testFuzz_hamsterBiteExactSplit`, `testFuzz_independentWithdrawalConservation` |
+| R2 | Emission arrives per certification and was split over the shares present at pull time, so a deposit mined just ahead of the Reporter's settle tx earned a full pro-rata share of the round for a 15% exit fee. | Shares deposited into a farm that already has stakers are `waiting` until the next pull that prices new Squeek blocks (`controller.emissionPerPoint()` moved); chunks are spread over `activeShares` only. The first stake into an empty farm earns immediately. Withdrawals burn waiting shares first and are never delayed. | `test/LaunchFindings.t.sol` (settle front-run, activation, forfeited pull, empty farm, burn order, view/claim fuzz) |
+
+Residual, inherent to redistributing a fee to remaining stakers and not reported: a
+single staker who splits their own exit into many withdrawals recycles the retained
+share into their own remaining position (the cap does not bind when the withdrawer's
+own remaining stake is large). Only the Treasury's 1% and the final exit's full 15%
+are guaranteed against a self-dealing whale.

@@ -196,14 +196,16 @@ contract FarmTest is CheeseBase {
         activateWithHistory(0);
         depositEth(alice, 3 ether);
         depositEth(bob, 1 ether);
+        warmUp(ethFarm); // bob joined a farm with stakers: his shares earn from the next priced pull on
         advanceBlocks(100);
-        uint256 poolShare = (issued(100) * 200) / 1000;
-        assertApproxEqAbs(ethFarm.pendingRewards(alice), (poolShare * 3) / 4, 1e6);
+        uint256 poolShare = ((issued(101) - issued(1)) * 200) / 1000;
+        uint256 warm = warmBlock(200); // the warm-up block went to alice alone
+        assertApproxEqAbs(ethFarm.pendingRewards(alice), (poolShare * 3) / 4 + warm, 1e6);
         assertApproxEqAbs(ethFarm.pendingRewards(bob), poolShare / 4, 1e6);
         uint256 aliceEthBefore = alice.balance;
         vm.prank(alice);
         uint256 claimed = ethFarm.claim(alice);
-        assertApproxEqAbs(claimed, (poolShare * 3) / 4, 1e6);
+        assertApproxEqAbs(claimed, (poolShare * 3) / 4 + warm, 1e6);
         assertEq(cheese.balanceOf(alice), claimed);
         assertEq(alice.balance, aliceEthBefore, "claim moves no principal");
         assertEq(ethFarm.sharesOf(alice), 3 ether * 1e3, "shares untouched by claim");
@@ -254,8 +256,13 @@ contract FarmTest is CheeseBase {
         uint256 poolShare = (issued(100) * 200) / 1000;
         assertEq(ethFarm.pendingRewards(bob), 0);
         assertApproxEqAbs(ethFarm.pendingRewards(alice), poolShare, 1e6);
+        // bob's shares wait for one priced pull: the next block is still alice's alone
+        advanceBlocks(1);
+        assertEq(ethFarm.pendingRewards(bob), 0, "waiting shares earn nothing from the pull they wait for");
+        assertApproxEqAbs(ethFarm.pendingRewards(alice), (issued(101) * 200) / 1000, 1e6);
+        warmUp(ethFarm);
         advanceBlocks(100);
-        uint256 next = ((issued(200) - issued(100)) * 200) / 1000;
+        uint256 next = ((issued(202) - issued(102)) * 200) / 1000;
         assertApproxEqAbs(ethFarm.pendingRewards(bob), (next * 100) / 101, 1e9);
     }
 
@@ -453,6 +460,7 @@ contract FarmTest is CheeseBase {
         activateWithHistory(0);
         depositCheese(alice, 100e18);
         depositCheese(bob, 100e18);
+        warmUp(cheeseFarm); // bob's shares earn from the next priced pull on
         advanceBlocks(10);
         // CHEESE is a plain OpenZeppelin ERC-20, so the Treasury push cannot fail; the reserve bookkeeping is
         // still exercised through the owed path by a mocked failed transfer.
@@ -493,12 +501,13 @@ contract FarmTest is CheeseBase {
         assertEq(shares, (100 ether * (1000 + 1000)) / (1 + 1));
         assertGt(ethFarm.accRewardPerShare(), type(uint256).max / shares, "plain product would overflow");
         assertEq(ethFarm.pendingRewards(bob), 0, "nothing from before bob's deposit");
+        warmUp(ethFarm); // bob's shares start earning after one priced pull (block 961 is alice's alone)
         advanceBlocks(40);
-        uint256 next = ((issued(1000) - issued(960)) * 200) / 1000;
+        uint256 next = ((issued(1001) - issued(961)) * 200) / 1000;
         assertApproxEqAbs(ethFarm.pendingRewards(bob), (next * shares) / ethFarm.totalShares(), 4);
         vm.prank(alice);
         uint256 aliceClaim = ethFarm.claim(alice);
-        assertApproxEqAbs(aliceClaim, (issued(960) * 200) / 1000 + (next * 1000) / ethFarm.totalShares(), 4);
+        assertApproxEqAbs(aliceClaim, (issued(961) * 200) / 1000 + (next * 1000) / ethFarm.totalShares(), 4);
         withdrawAll(ethFarm, bob);
         vm.prank(bob);
         ethFarm.claim(bob);
@@ -531,7 +540,9 @@ contract FarmTest is CheeseBase {
         }
         uint256 minted = cheese.balanceOf(address(ethFarm)) + paidTotal;
         assertLe(paidTotal, minted);
-        assertLe(minted - paidTotal, 16, "at most a wei per share change stays as dust");
+        // Each share change rounds the debt once, and each activation of waiting shares rounds its baseline
+        // once more, so at most two wei per deposit can stay behind as dust.
+        assertLe(minted - paidTotal, 24, "at most two wei per share change stays as dust");
         assertEq(ethFarm.rewardReserve(), minted - paidTotal);
     }
 

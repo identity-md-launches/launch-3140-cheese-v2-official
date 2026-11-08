@@ -58,12 +58,14 @@ contract ImportedAuditTest is CheeseBase {
         ethFarm.deposit{value: 1000 ether}();
         vm.prank(bob);
         ethFarm.deposit{value: 1}();
-        assertEq(withdrawAll(ethFarm, alice), 850 ether);
-        assertEq(ethFarm.totalAssets(), 140000000000000000001);
-        assertEq(ethFarm.assetsOf(bob), 70000000000000000001);
+        // Revision (finding df1f3c45): the retained share is capped at 15/85 of the assets backing the
+        // remaining shares. Bob's 1 wei backs a cap of 0, so the whole 150 ETH fee goes to the Treasury now.
         uint256 beforeTreasury = treasury.balance;
-        assertEq(withdrawAll(ethFarm, bob), 59500000000000000001);
-        assertEq(treasury.balance - beforeTreasury, 80500000000000000000);
+        assertEq(withdrawAll(ethFarm, alice), 850 ether);
+        assertEq(treasury.balance - beforeTreasury, 150 ether);
+        assertEq(ethFarm.totalAssets(), 1);
+        assertEq(ethFarm.assetsOf(bob), 1);
+        assertEq(withdrawAll(ethFarm, bob), 1);
         assertEq(ethFarm.totalAssets(), 0);
         assertEq(address(ethFarm).balance, 0);
     }
@@ -77,10 +79,12 @@ contract ImportedAuditTest is CheeseBase {
         ethFarm.deposit{value: 10 ether}(); // Pulls all already-certified emission to Alice first.
         assertEq(ethFarm.pendingRewards(bob), 0);
         advanceBlocks(40);
+        // Revision (finding a4e5b610): bob's shares wait for one priced pull, so the round certified right
+        // after his deposit is alice's alone; his exit fee buys nothing.
         assertEq(withdrawAll(ethFarm, bob), 8.5 ether);
         vm.prank(bob);
-        assertEq(ethFarm.claim(bob), 14698282800044052490233);
-        assertEq(ethFarm.pendingRewards(alice), 44094848400132157470699);
+        assertEq(ethFarm.claim(bob), 0);
+        assertApproxEqAbs(ethFarm.pendingRewards(alice), (issued(80) * 200) / 1000, 2);
     }
 
     function test_auditUnconfiguredSIMDForfeitsAndCannotRepairWrongAsset() public {

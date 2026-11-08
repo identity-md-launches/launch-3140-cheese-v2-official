@@ -41,8 +41,14 @@ Exactly CheeseEmissionController, CheeseToken, CheeseFarmERC20 (CHEESE asset),
 CheeseFarmETH and CheeseFarmSIMD on Ethereum Sepolia. No proxy wrappers or extra
 platform token. The controller binds the verified official SqueekCore proxy;
 Mining is a read-only issuance oracle. Mock contracts under test/ are not launch targets.
-All five bytecode hashes and immutable locations are in release/build-manifest.json.
-The audited contract bytecode templates must not change during import/adaptation.
+The upstream audited bytecode hashes and immutable locations are in
+release/build-manifest.json. The controller and token still match them. The three
+farms changed in the launch revision that fixed two reproducible reviewer findings
+(retained-fee capture by a just-in-time stake, and just-in-time reward capture); their
+current hashes are in release/official-sepolia-checks.json and are asserted by
+`FOUNDRY_TEST=checks/launch forge test`. `tools/verify_release.py --build` therefore
+reports the three farm hashes as differing from the upstream manifest, by design.
+See ADAPTATION.md for the exact changes.
 
 The requester has explicitly approved `0xdea11b3a70b77134424d436f6eb455f1abbd4449`
 for Owner, Treasury, Guardian and all three premint recipients. These are now recorded

@@ -17,6 +17,7 @@ interface ICheeseEmissionController {
     function pullRewards(uint256 poolId, bool hasStakers) external returns (uint256 amount, bool synced);
     function checkpoint() external returns (bool synced, uint256 emitted);
     function emissionsPaused() external view returns (bool);
+    function emissionPerPoint() external view returns (uint256);
     function previewPoolEmission(uint256 poolId) external view returns (uint256);
     function getPoolAllocation(uint256 poolId)
         external

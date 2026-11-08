@@ -70,6 +70,10 @@ contract AccountingEdgesTest is CheeseBase {
         uint256 gross = shares * (backing + 1) / (supply + 1000);
         uint256 fee = gross * 15 / 100;
         uint256 retained = gross * 14 / 100;
+        // the retained share is capped at 15/85 of the assets backing the remaining shares
+        uint256 remainingAssets = (supply - shares) * (backing + 1) / (supply + 1000);
+        uint256 cap = remainingAssets * 1500 / 8500;
+        if (retained > cap) retained = cap;
         uint256 oldTreasury = treasury.balance;
         vm.prank(alice);
         assertEq(ethFarm.withdraw(shares), gross - fee);

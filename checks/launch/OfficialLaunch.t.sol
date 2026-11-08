@@ -72,15 +72,15 @@ contract OfficialLaunchTest is Test {
         );
         assertEq(
             keccak256(type(CheeseFarmERC20).creationCode),
-            0xf919ccbb9116ac6a1fa7900462c74616f08f9c28bdcf444e0e65ed6d935a8b3e
+            0x41f06f1e2144ecb7bdde27e1ce5b96217edd09c32cb880c8f3f518cb50cc0365
         );
         assertEq(
             keccak256(type(CheeseFarmETH).creationCode),
-            0x4206d17ed1f0752b1f02c7566b4190a218aa33367c044f66adf3f0506ed2041b
+            0xf7083924024ad677193658cdb6f266406ba15c61577a17160749692bc8925e46
         );
         assertEq(
             keccak256(type(CheeseFarmSIMD).creationCode),
-            0x78273e05179b53c1fb080214379375b3bd4593e45962429949747ac602141f56
+            0xbf8915b690efc02e1e45d7570b60dd2a6b3a4c5490894d8ba154f62ab2572c83
         );
     }
 
@@ -192,29 +192,31 @@ contract OfficialLaunchTest is Test {
         assertEq(keccak256(code), 0x61698399b86962b1a2a1d23eaee6067f33b2267937153ccabae2985f8407fdbd);
 
         code = address(cheeseFarm).code;
-        uint256[11] memory erc20Controller = [uint256(1038), 1326, 1971, 2842, 3419, 3649, 3837, 4456, 5122, 5635, 6198];
-        uint256[8] memory erc20Asset = [uint256(906), 5045, 6335, 6404, 6637, 6832, 6952, 7015];
+        uint256[12] memory erc20Controller =
+            [uint256(1079), 1416, 2046, 3021, 3529, 3759, 3947, 4684, 4951, 5597, 6233, 7070];
+        uint256[8] memory erc20Asset = [uint256(938), 5521, 7207, 7276, 7509, 7659, 7779, 7842];
         for (uint256 i; i < erc20Controller.length; ++i) {
             _clear(code, erc20Controller[i], _word(address(controller)));
         }
         for (uint256 i; i < erc20Asset.length; ++i) {
             _clear(code, erc20Asset[i], _word(address(cheese)));
         }
-        assertEq(keccak256(code), 0x34d5392d4849494165c6cfcffadc033d151ab89905f8c82a194a098fd0e5b2f2);
+        assertEq(keccak256(code), 0x514c73440b00708e257bc2d0e3edba4b6beb1ff5db39b645ec16eafa23c1b5a9);
 
         code = address(ethFarm).code;
-        uint256[10] memory ethController = [uint256(1261), 1762, 2407, 3278, 3855, 4085, 4273, 4853, 5580, 6129];
+        uint256[11] memory ethController = [uint256(1314), 1888, 2518, 3493, 4001, 4231, 4419, 5117, 5384, 6091, 6763];
         for (uint256 i; i < ethController.length; ++i) {
             _clear(code, ethController[i], _word(address(controller)));
         }
-        assertEq(keccak256(code), 0x08cf75d04037b58574dd3818c570bdd2cc0ba028eaadee276dbbf14261593f4f);
+        assertEq(keccak256(code), 0x7da52128abc46a45bc3cc933451ddc4fc67dca54e1b0f88799417989592a0c72);
 
         code = address(simdFarm).code;
-        uint256[11] memory simdController = [uint256(1029), 1336, 1981, 2852, 3429, 3659, 3847, 4670, 5351, 5908, 6471];
+        uint256[12] memory simdController =
+            [uint256(1070), 1426, 2056, 3031, 3539, 3769, 3957, 4898, 5165, 5826, 6506, 7343];
         for (uint256 i; i < simdController.length; ++i) {
             _clear(code, simdController[i], _word(address(controller)));
         }
-        assertEq(keccak256(code), 0x747468b5b5cc6f650fce50a229b1c3e290a819837711d8338fad27308e1b7ec4);
+        assertEq(keccak256(code), 0x65e41cd28ceea8b43eecf1c14f74aafb76ffa4bb545d50b187c0364e13a4145b);
         _tokenRuntime();
     }
 
