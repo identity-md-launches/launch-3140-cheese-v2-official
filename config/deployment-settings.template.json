@@ -1,0 +1,17 @@
+{
+  "status": "BLOCKED_UNCONFIRMED_DEPLOYMENT_CONFIGURATION",
+  "chainId": 11155111,
+  "owner": null,
+  "ownerPolicy": "Verified wallet controlled by the Swarm requester; no test-wallet substitution",
+  "treasury": null,
+  "guardian": null,
+  "premintRecipients": {
+    "team": null,
+    "treasury": null,
+    "liquidity": null
+  },
+  "realSIMDAsset": null,
+  "squeekCore": "0xfd6c166d4b8e2962e65746a13e5a0797cd4de0c4",
+  "squeekMining": "0x2dccb11fcc2defdd188555e45acb52231e82e218",
+  "policy": "No hidden role defaults. Guardian initially equals constructor Owner. No deployment/activation until final role choices and real non-rebasing sIMD are verified. Mocks are test fixtures only."
+}

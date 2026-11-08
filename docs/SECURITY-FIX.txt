@@ -1,0 +1,27 @@
+CHEESE V2 public security summary
+
+The controller limits each SqueekCore read to 500,000 gas with bounded return data.
+Normal withdrawals do not depend on Core success. Already-accounted rewards survive
+outages; deposits still require synchronization. Unobserved emission is accounted on
+recovery against remaining eligibility and forfeited if the pool emptied. Historical
+share snapshots are not introduced.
+
+ERC20 Treasury pushes execute inside a self-only, 500,000-gas reverting frame. The
+helper accepts successful empty return data only from a contract, or exactly 32 bytes
+encoding canonical true. False, malformed, reverted and gas-exhausted pushes roll back
+token-side changes before the caller defers the fee. At most 32 bytes are copied.
+
+Emission math, supply cap, allocation math, withdrawal fee math and ETH Treasury
+stipend remain unchanged. Dedicated tests cover three farms, eight Core faults, ten
+token-return modes, cold storage, rewards across recovery, final fees, rollback,
+deferred payment, helper access control, and no retroactive eligibility.
+
+The six historical HIGH entries have passing regression proofs. Public test names and
+dispositions are in release/security-summary.json. Private audit evidence and local
+wallet data are intentionally excluded. No unresolved critical/HIGH finding remains
+within the reviewed source scope; this is not a guarantee against unknown defects.
+
+All five prior contracts require replacement due to immutable wiring and fixed code.
+The old token remains distinct, with its own premint and supply; no balance migration,
+sweep, burning or owner action is authorized. Recheck prior liabilities before replacing
+an inactive deployment. Active deposits require a separately reviewed migration plan.

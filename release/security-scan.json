@@ -1,0 +1,9 @@
+{
+  "status": "PASS_PATTERN_SCAN_AND_REVIEW",
+  "publicCandidateFindings": 0,
+  "privateKeysKeystoresPasswordsAPIKeysRPCCredentialsDetected": 0,
+  "privateEvidenceAndWalletDataExcluded": true,
+  "historyPolicy": "One fresh parentless sanitized release commit; no original Git objects",
+  "method": "All public source files, tools, documentation and dependencies scanned; local wallet associations and credential-bearing paths excluded",
+  "limits": "Pattern/contextual scan, not proof against arbitrary unknown secrets"
+}

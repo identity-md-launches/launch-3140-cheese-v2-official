@@ -1,0 +1,11 @@
+out/
+cache/
+broadcast/
+test/scratch/
+.env
+.env.*
+lib/openzeppelin-contracts/.gitmodules
+verification-output/
+release-output/
+lcov.info
+coverage-attribution.json

@@ -1,0 +1,155 @@
+{
+  "forgeVersion": "forge Version: 1.8.5\nCommit SHA: 51a52c59cffd940f76eddd0b4bb1791aa4b5ac7f\nBuild Timestamp: 2026-10-05T17:01:32.131957300Z (1791219692)\nBuild Profile: dist",
+  "solcVersion": "solc, the solidity compiler commandline interface\nVersion: 0.8.26+commit.8a97fa7a.Windows.msvc",
+  "results": [
+    {
+      "name": "amsterdam",
+      "passed": 189,
+      "failed": 0,
+      "fuzzCases": 3840,
+      "invariantCalls": 8192,
+      "seed": "0xdf414340e80273b96b0da0b947078a573285f2d5cb8059314b94cca491a43568"
+    },
+    {
+      "name": "cancun",
+      "passed": 189,
+      "failed": 0,
+      "fuzzCases": 3840,
+      "invariantCalls": 8192,
+      "seed": "0xdf414340e80273b96b0da0b947078a573285f2d5cb8059314b94cca491a43568"
+    },
+    {
+      "name": "isolated-amsterdam",
+      "passed": 189,
+      "failed": 0,
+      "fuzzCases": 3840,
+      "invariantCalls": 8192,
+      "seed": "0xdf414340e80273b96b0da0b947078a573285f2d5cb8059314b94cca491a43568"
+    },
+    {
+      "name": "extended-fuzz",
+      "passed": 12,
+      "failed": 0,
+      "fuzzCases": 38400,
+      "invariantCalls": 0,
+      "seed": "0xdf414340e80273b96b0da0b947078a573285f2d5cb8059314b94cca491a43568"
+    },
+    {
+      "name": "Invariants-invariant_farmBalanceCoversPrincipal",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 2048,
+      "seed": "0x2812322b5ec19f1599a4d22fa5bdcd8bb214bf6d31eccb77d54b23edbc189696"
+    },
+    {
+      "name": "Invariants-invariant_userActionsNeverRevertUnexpectedly",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 2048,
+      "seed": "0x320b508d2cad88e2690edcf14ddab12425924ae3a4021a5cb196b5e66b3b3412"
+    },
+    {
+      "name": "Invariants-invariant_entitlementsNeverExceedReserve",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 2048,
+      "seed": "0xabab33465e4276edd1a5ee3f05c80b323c90f55e575b6081130e1a3aa659f68d"
+    },
+    {
+      "name": "Invariants-invariant_ethConservation",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 2048,
+      "seed": "0xc6e51005ea9f3a5fd5b82b5b2a7f3943156cdc7f2500ee109abd9280d225e9fc"
+    },
+    {
+      "name": "Invariants-invariant_sharesSumAndBacking",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 2048,
+      "seed": "0x7cbe5d16b590e04d7dbe086a208b59eebebd56889fa01b1aa1cd7baa595b00fc"
+    },
+    {
+      "name": "Invariants-invariant_supplyAccounting",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 2048,
+      "seed": "0xbf6492d703aeada1d97f1ed486f75bac7a5e1381209bfacc7cef44e4377268fa"
+    },
+    {
+      "name": "Invariants-invariant_weightsWithinTotal",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 2048,
+      "seed": "0xf91b306b9d42ed76bbc954d450c56e8689e1d807bb8a3b8132be4e2541440f73"
+    },
+    {
+      "name": "SystemInvariants-invariant_reservesBacked",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 6144,
+      "seed": "0xe2561885c4c47d46cb3ebbbb1c2d97bcd346e69a20dd4e58e3f2bc8490f737d3"
+    },
+    {
+      "name": "SystemInvariants-invariant_exitsNeverRevert",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 6144,
+      "seed": "0x674293155500f1c446db893dd8c4dc2ab64a4819b152e5e7bd13401d2a136126"
+    },
+    {
+      "name": "SystemInvariants-invariant_principalConservation",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 6144,
+      "seed": "0x7f8aea68739456cabfa78a4358c34c379f208587311eb2ab859cf4daf29b644e"
+    },
+    {
+      "name": "SystemInvariants-invariant_sharesFullySubscribed",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 6144,
+      "seed": "0x28f9399fd95f4b0269e0de430a597b98a3c4243499bcd258ced6ba0878f8b2e1"
+    },
+    {
+      "name": "SystemInvariants-invariant_supplyAndMintAccounting",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 6144,
+      "seed": "0x1a1c571224c8eec1a1b08c609fbbe49a138a81c248d69d8b2367314fce66dfe2"
+    },
+    {
+      "name": "SystemInvariants-invariant_monotoneAndFinal",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 6144,
+      "seed": "0xb8ae267db6b61270babdc7084f5479e04194259776d1780a43828b508d3c3464"
+    },
+    {
+      "name": "SystemInvariants-invariant_rewardsOwedBoundedByReserve",
+      "passed": 1,
+      "failed": 0,
+      "fuzzCases": 0,
+      "invariantCalls": 6144,
+      "seed": "0x362d46fda1838385bc9ca423383ea2e827e4284ddf486896af4933985a684f69"
+    },
+    {
+      "name": "mock-integration",
+      "success": true,
+      "localUnsignedActions": 118
+    }
+  ]
+}

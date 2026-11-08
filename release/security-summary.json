@@ -1,0 +1,17 @@
+{
+  "unresolvedCriticalIdentified": 0,
+  "unresolvedHighIdentified": 0,
+  "scope": "Reviewed corrected source plus completed isolated mock-bound live tests",
+  "fixes": [
+    "Bounded Core gas/return data preserves withdrawals and known rewards",
+    "Canonical ERC20 Treasury return validation with rollback before fee deferral",
+    "Full-precision reward debt accounting and conservative rounding"
+  ],
+  "limitations": [
+    "Real sIMD unverified; rebasing assets unsupported",
+    "No historical-share snapshot during Core outages",
+    "Trusted owner controls future allocations and farm registration",
+    "Official release roles unconfirmed",
+    "Finite tests are not a proof of absence of bugs"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "testedSourceCommit": "b8350648a73b8a3c1574a07c429ef1e6a9b0e7f8",
+  "correctedAuditCommit": "5782775a026662324f0765ea89689afd911741fc",
+  "productionBaseCommit": "4446ac99d4da02f70991faf42b5a3350af226861",
+  "productionSourceChanges": [],
+  "publicationHistory": "Fresh parentless sanitized commit",
+  "auxiliaryChanges": [
+    "Remove private/function-audit evidence and stale public metadata",
+    "Remove root launch.json with unconfirmed Owner aliases",
+    "Make retest verification standalone; regenerate checksum manifests",
+    "Refresh public documentation and aggregate test summaries"
+  ],
+  "allSourceTestsScriptsLibrariesABIsUnchanged": true
+}

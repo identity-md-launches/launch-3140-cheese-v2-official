@@ -1,0 +1,27 @@
+{
+  "status": "PASS_READ_ONLY_SQUEEKCHAIN_BINDINGS",
+  "checkedAtUTC": "2026-11-07T15:51:23.251Z",
+  "chainId": 11155111,
+  "blockNumber": 12084662,
+  "blockHash": "0xf7555194f8f0bb16b22b65cc72bc6614656758d5e12daacd8da88815f0afe1e8",
+  "providers": [
+    "https://ethereum-sepolia-rpc.publicnode.com",
+    "https://rpc.sepolia.ethpandaops.io"
+  ],
+  "officialDeploymentManifest": "https://docs.squeekchain.com/assets/deployments/sepolia.json",
+  "officialRelease": "core-sepolia-20261103",
+  "core": {
+    "address": "0xfd6c166d4b8e2962e65746a13e5a0797cd4de0c4",
+    "implementation": "0x6869d6102696243fd17013ab955d99cd0c522ad3",
+    "runtimeKeccak256": "0x65b5780a4fccafedeca1260806364d2bb512b4501c097253f792ae2839565a9c"
+  },
+  "mining": {
+    "address": "0x2dccb11fcc2defdd188555e45acb52231e82e218",
+    "implementation": "0x32639fc0bbd16ba0b140f78950751591609cfaa4",
+    "runtimeKeccak256": "0xbcc7179f61610f44cf19a8fe4ffe27c06cba083a9430eb2787c5807b30e1e959",
+    "coreBinding": "0xfd6c166d4b8e2962e65746a13e5a0797cd4de0c4"
+  },
+  "clockAndIssuanceScheduleMatch": true,
+  "scope": "Official Squeekchain READ ONLY; isolated test deployment uses separate mocks",
+  "realSIMDAsset": "Not used in this isolated test"
+}

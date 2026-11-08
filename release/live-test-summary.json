@@ -1,0 +1,11 @@
+{
+  "status": "PASS_ISOLATED_MOCK_BOUND_SEPOLIA_TEST",
+  "testedSourceCommit": "b8350648a73b8a3c1574a07c429ef1e6a9b0e7f8",
+  "chainId": 11155111,
+  "confirmedTransactions": 306,
+  "passedRecordedSteps": 390,
+  "revertedBroadcasts": 0,
+  "scope": "Mock Core and test assets, not completed real official Core integration",
+  "productionBytecodeMatches": 5,
+  "privateEvidencePublished": false
+}
