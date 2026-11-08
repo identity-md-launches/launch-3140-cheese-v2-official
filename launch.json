@@ -4,7 +4,7 @@
     {
       "contract": "CheeseEmissionController",
       "constructorArgs": [
-        "$owner",
+        "0xdea11b3a70b77134424d436f6eb455f1abbd4449",
         "0xfd6c166d4b8e2962e65746a13e5a0797cd4de0c4",
         "0xdea11b3a70b77134424d436f6eb455f1abbd4449"
       ]
@@ -21,7 +21,7 @@
     {
       "contract": "CheeseFarmERC20",
       "constructorArgs": [
-        "$owner",
+        "0xdea11b3a70b77134424d436f6eb455f1abbd4449",
         "$contract:CheeseEmissionController",
         "$contract:CheeseToken"
       ]
@@ -29,17 +29,17 @@
     {
       "contract": "CheeseFarmETH",
       "constructorArgs": [
-        "$owner",
+        "0xdea11b3a70b77134424d436f6eb455f1abbd4449",
         "$contract:CheeseEmissionController"
       ]
     },
     {
       "contract": "CheeseFarmSIMD",
       "constructorArgs": [
-        "$owner",
+        "0xdea11b3a70b77134424d436f6eb455f1abbd4449",
         "$contract:CheeseEmissionController"
       ]
     }
   ],
-  "notes": "CHEESE V2 official Sepolia (11155111) release from konrewz/cheese-vault-v2 commit 65924ab66aa6e2197d9a781220678c29553165cf, deployed as exactly five new contracts with zero ETH and no wiring. Owner 0xdea11b3a70b77134424d436f6eb455f1abbd4449 is also Treasury, Guardian (constructor default = owner) and the Team, Treasury and Liquidity premint recipient. CheeseEmissionController(owner, squeekCore, treasury): squeekCore is the official Sepolia SqueekCore proxy 0xfd6c166d4b8e2962e65746a13e5a0797cd4de0c4 (release core-sepolia-20261103, see release/squeekchain-bindings.json); official SqueekMining 0x2dccb11fcc2defdd188555e45acb52231e82e218 is a read-only schedule reference and is not a constructor input. The constructor stores the core address without calling it. CheeseToken(team, treasury, liquidity, emissionAuthority): CHEESE/CHEESE, 18 decimals, 2,100,000,000 lifetime cap, 210,000,000 premint (63M team, 63M treasury, 84M liquidity) minted in the constructor to the owner wallet; 1,890,000,000 mining allowance mintable only by the immutable controller; no owner, no arbitrary minting, burns never reopen the cap. CheeseFarmERC20(owner, controller, asset=new CHEESE), CheeseFarmETH(owner, controller), CheeseFarmSIMD(owner, controller): Hamster Bite farms with 0% deposit fee and 15% withdrawal fee of gross compounded assets (85% user, 14% retained, 1% Treasury; last depositor sends the whole 15% plus dust to Treasury), immediate withdrawals, nontransferable shares, separate reward claims. The sIMD farm is deployed without an asset: the real Sepolia sIMD is unverified, so no mock or substitute is passed and the farm stays inactive until the owner verifies a non-rebasing token and calls setAsset once. Emissions are NOT activated by this launch. Pending owner-only steps (Etherscan, from 0xdea11b3a70b77134424d436f6eb455f1abbd4449): verify the five addresses, owners, premint balances and immutable bindings (token.emissionAuthority = controller, controller.squeekCore = official core, farms.controller = controller, CheeseFarmERC20.asset = new CHEESE); controller.bindToken(CheeseToken); setTreasury/setGuardian only if a change is needed; controller.addPool(CheeseFarmERC20, 400); controller.addPool(CheeseFarmETH, 200); controller.addPool(CheeseFarmSIMD, 200); confirm getAllocation() = (800, 0, 200) with the 200-point Future Reserve unallocated and unminted; verify the real sIMD before CheeseFarmSIMD.setAsset; call controller.activate() only after all configuration and live-Core compatibility checks pass. Do not renounce ownership. Do not reuse V1 or test addresses."
+  "notes": "CHEESE V2 official Sepolia (11155111) release from konrewz/cheese-vault-v2 commit 65924ab66aa6e2197d9a781220678c29553165cf, deployed as exactly five new contracts with zero ETH and no wiring. Owner 0xdea11b3a70b77134424d436f6eb455f1abbd4449 is also Treasury, Guardian (constructor default = owner) and the Team, Treasury and Liquidity premint recipient; because the brief states this address, every owner argument is written as that static address rather than $owner, so ownership never depends on which wallet pays for the launch. CheeseEmissionController(owner, squeekCore, treasury): squeekCore is the official Sepolia SqueekCore proxy 0xfd6c166d4b8e2962e65746a13e5a0797cd4de0c4 (release core-sepolia-20261103, see release/squeekchain-bindings.json); official SqueekMining 0x2dccb11fcc2defdd188555e45acb52231e82e218 is a read-only schedule reference and is not a constructor input. The constructor stores the core address without calling it. CheeseToken(team, treasury, liquidity, emissionAuthority): CHEESE/CHEESE, 18 decimals, 2,100,000,000 lifetime cap, 210,000,000 premint (63M team, 63M treasury, 84M liquidity) minted in the constructor to the owner wallet; 1,890,000,000 mining allowance mintable only by the immutable controller; no owner, no arbitrary minting, burns never reopen the cap. CheeseFarmERC20(owner, controller, asset=new CHEESE), CheeseFarmETH(owner, controller), CheeseFarmSIMD(owner, controller): Hamster Bite farms with 0% deposit fee and 15% withdrawal fee of gross compounded assets (85% user, 14% retained, 1% Treasury; last depositor sends the whole 15% plus dust to Treasury), immediate withdrawals, nontransferable shares, separate reward claims. The sIMD farm is deployed without an asset: the real Sepolia sIMD is unverified, so no mock or substitute is passed and the farm stays inactive until the owner verifies a non-rebasing token and calls setAsset once. Emissions are NOT activated by this launch. Pending owner-only steps (Etherscan, from 0xdea11b3a70b77134424d436f6eb455f1abbd4449): verify the five addresses, owners, premint balances and immutable bindings (token.emissionAuthority = controller, controller.squeekCore = official core, farms.controller = controller, CheeseFarmERC20.asset = new CHEESE); controller.bindToken(CheeseToken); setTreasury/setGuardian only if a change is needed; controller.addPool(CheeseFarmERC20, 400); controller.addPool(CheeseFarmETH, 200); controller.addPool(CheeseFarmSIMD, 200); confirm getAllocation() = (800, 0, 200) with the 200-point Future Reserve unallocated and unminted; verify the real sIMD before CheeseFarmSIMD.setAsset; call controller.activate() only after all configuration and live-Core compatibility checks pass. Do not renounce ownership. Do not reuse V1 or test addresses."
 }
