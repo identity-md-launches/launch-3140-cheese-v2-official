@@ -3,6 +3,7 @@ pragma solidity 0.8.26;
 
 import {Test} from "forge-std/Test.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {CheeseEmissionController} from "src/CheeseEmissionController.sol";
 import {CheeseToken} from "src/CheeseToken.sol";
 import {CheeseFarm} from "src/CheeseFarm.sol";
@@ -57,6 +58,7 @@ contract ReserveHandler is Test {
         uint256 owed;
         uint256 gross;
         uint256 preview;
+        uint256 remaining;
     }
 
     CheeseEmissionController public controller;
@@ -196,6 +198,8 @@ contract ReserveHandler is Test {
         s.treasuryBalance = treasuryBalance(kind);
         s.owed = farm.treasuryOwed();
         (s.gross, s.preview,,) = farm.previewWithdraw(s.shares);
+        // Assets backing the shares that stay staked, priced before the exit.
+        s.remaining = farm.convertToAssets(farm.totalShares() - s.shares);
         vm.prank(who);
         uint256 paid = farm.withdraw(s.shares);
         uint256 actualPaid = principalBalance(kind, who) - s.userBalance;
@@ -214,7 +218,14 @@ contract ReserveHandler is Test {
             assertEq(farm.totalAssets(), 0, "last exit leaves no principal");
             assertEq(sentTreasury + deferred, s.principal - paid, "last exit fee and dust belong to Treasury");
         } else {
-            assertEq(sentTreasury + deferred, s.gross - paid - s.gross * 14 / 100, "14 percent retained fee");
+            // Retained-fee cap (finding df1f3c45 fix): the farm keeps 14% of gross, but never more than the
+            // remaining stake will itself pay the Treasury on exit (15/85 of the assets backing it).
+            uint256 retained = s.gross * 14 / 100;
+            uint256 cap = Math.mulDiv(s.remaining, 15, 85);
+            if (retained > cap) retained = cap;
+            assertEq(sentTreasury + deferred, s.gross - paid - retained, "capped 14 percent retained fee");
+            assertGe(sentTreasury + deferred, s.gross / 100, "Treasury receives at least 1 percent");
+            assertEq(farm.totalAssets(), s.principal - paid - (sentTreasury + deferred), "retained part stays");
         }
         _observe();
     }
