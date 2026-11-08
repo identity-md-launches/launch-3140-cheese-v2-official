@@ -1,0 +1,244 @@
+{
+  "status": "SOURCE_ADAPTATION_CHECKED_NOT_DEPLOYED",
+  "checkedAtUTC": "2026-11-08T08:05:51.333652+00:00",
+  "source": {
+    "repository": "https://github.com/konrewz/cheese-vault-v2",
+    "importedCommit": "65924ab66aa6e2197d9a781220678c29553165cf",
+    "archiveSha256": "34fe6ea1e0fdc7902a5c6a4f45441b1aaf9c190fe35aa121017bf1c020ff9b90",
+    "upstreamFilesComparedAtImport": 482,
+    "upstreamFilesDifferentAtImport": 0,
+    "auditedInputFilesUnchanged": 461,
+    "changedOriginalFiles": [
+      "README.md",
+      "config/deployment-settings.template.json",
+      "tools/verify_release.py"
+    ],
+    "productionSolidityChanged": false,
+    "buildConfigurationChanged": false,
+    "dependenciesChanged": false,
+    "solidityDeploymentScriptsChanged": false,
+    "originalTestsChanged": false,
+    "releaseManifestAuditedCommit": "5782775a026662324f0765ea89689afd911741fc"
+  },
+  "toolchain": {
+    "observedForge": "1.8.3",
+    "releaseRecordedForge": "1.8.5",
+    "exactReleaseForgeVersionReproduced": false,
+    "solc": "0.8.26+commit.8a97fa7a",
+    "optimizer": true,
+    "optimizerRuns": 200,
+    "viaIR": false,
+    "evmVersion": "cancun",
+    "bytecodeHash": "none",
+    "cborMetadata": false
+  },
+  "tests": {
+    "fuzzSeed": "0x6f82d1d53b505d6ef746b191e2c3e79934b75cda2ed6635445ac37d7c8f3f8e7",
+    "forgeBuild": "PASS",
+    "originalSuite": {
+      "status": "PASS",
+      "passed": 189,
+      "failed": 0,
+      "skipped": 0
+    },
+    "originalSuiteAmsterdamIsolated": {
+      "status": "PASS",
+      "passed": 189,
+      "failed": 0,
+      "skipped": 0
+    },
+    "additionalFactoryAndAuditSuite": {
+      "status": "PASS",
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0
+    },
+    "pythonVerifierRegressions": {
+      "status": "PASS",
+      "passed": 11,
+      "failed": 0
+    },
+    "optionalRealCoreForkSuite": {
+      "status": "PASS",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "originalReadOnlySqueekchainScript": "PASS",
+    "runtimeProofScope": "Local EVM deployment with approved owner and Sepolia chain ID; not an on-chain deployment attestation"
+  },
+  "contracts": [
+    {
+      "contract": "CheeseEmissionController",
+      "artifact": "CheeseEmissionController.sol/CheeseEmissionController.json",
+      "creationKeccak256": "0x9f1969497a5ee0b481d2bafe6114644818cb31bc213f62b96b7d8406a699d2ac",
+      "runtimeTemplateKeccak256": "0x61698399b86962b1a2a1d23eaee6067f33b2267937153ccabae2985f8407fdbd",
+      "creationBytes": 15739,
+      "runtimeBytes": 15190,
+      "immutableGroups": 1,
+      "creationAndTemplateComparison": "PASS",
+      "localFactoryRuntimeAndBindings": "PASS",
+      "newAddress": null,
+      "transactionHash": null,
+      "sepoliaEtherscanLink": null,
+      "liveRuntimeVerification": "PENDING_IMD_DEPLOYMENT",
+      "explorerSourceVerification": "PENDING_IMD_DEPLOYMENT"
+    },
+    {
+      "contract": "CheeseFarmERC20",
+      "artifact": "CheeseFarmERC20.sol/CheeseFarmERC20.json",
+      "creationKeccak256": "0xf919ccbb9116ac6a1fa7900462c74616f08f9c28bdcf444e0e65ed6d935a8b3e",
+      "runtimeTemplateKeccak256": "0x34d5392d4849494165c6cfcffadc033d151ab89905f8c82a194a098fd0e5b2f2",
+      "creationBytes": 8402,
+      "runtimeBytes": 7837,
+      "immutableGroups": 2,
+      "creationAndTemplateComparison": "PASS",
+      "localFactoryRuntimeAndBindings": "PASS",
+      "newAddress": null,
+      "transactionHash": null,
+      "sepoliaEtherscanLink": null,
+      "liveRuntimeVerification": "PENDING_IMD_DEPLOYMENT",
+      "explorerSourceVerification": "PENDING_IMD_DEPLOYMENT"
+    },
+    {
+      "contract": "CheeseFarmETH",
+      "artifact": "CheeseFarmETH.sol/CheeseFarmETH.json",
+      "creationKeccak256": "0x4206d17ed1f0752b1f02c7566b4190a218aa33367c044f66adf3f0506ed2041b",
+      "runtimeTemplateKeccak256": "0x08cf75d04037b58574dd3818c570bdd2cc0ba028eaadee276dbbf14261593f4f",
+      "creationBytes": 7987,
+      "runtimeBytes": 7548,
+      "immutableGroups": 1,
+      "creationAndTemplateComparison": "PASS",
+      "localFactoryRuntimeAndBindings": "PASS",
+      "newAddress": null,
+      "transactionHash": null,
+      "sepoliaEtherscanLink": null,
+      "liveRuntimeVerification": "PENDING_IMD_DEPLOYMENT",
+      "explorerSourceVerification": "PENDING_IMD_DEPLOYMENT"
+    },
+    {
+      "contract": "CheeseFarmSIMD",
+      "artifact": "CheeseFarmSIMD.sol/CheeseFarmSIMD.json",
+      "creationKeccak256": "0x78273e05179b53c1fb080214379375b3bd4593e45962429949747ac602141f56",
+      "runtimeTemplateKeccak256": "0x747468b5b5cc6f650fce50a229b1c3e290a819837711d8338fad27308e1b7ec4",
+      "creationBytes": 8446,
+      "runtimeBytes": 8000,
+      "immutableGroups": 1,
+      "creationAndTemplateComparison": "PASS",
+      "localFactoryRuntimeAndBindings": "PASS",
+      "newAddress": null,
+      "transactionHash": null,
+      "sepoliaEtherscanLink": null,
+      "liveRuntimeVerification": "PENDING_IMD_DEPLOYMENT",
+      "explorerSourceVerification": "PENDING_IMD_DEPLOYMENT"
+    },
+    {
+      "contract": "CheeseToken",
+      "artifact": "CheeseToken.sol/CheeseToken.json",
+      "creationKeccak256": "0x4d2fed1db5ad0e3a46c3e2b6a9ca9e73bc872491527fd6d71ca55e6e2385610b",
+      "runtimeTemplateKeccak256": "0x3cf513d6cab26433bc5153e2e869d299968f74c5458eac006f2233ef5d40afd3",
+      "creationBytes": 6268,
+      "runtimeBytes": 4508,
+      "immutableGroups": 8,
+      "creationAndTemplateComparison": "PASS",
+      "localFactoryRuntimeAndBindings": "PASS",
+      "newAddress": null,
+      "transactionHash": null,
+      "sepoliaEtherscanLink": null,
+      "liveRuntimeVerification": "PENDING_IMD_DEPLOYMENT",
+      "explorerSourceVerification": "PENDING_IMD_DEPLOYMENT"
+    }
+  ],
+  "squeekchain": {
+    "status": "PASS_READ_ONLY_BINDINGS_ABI_CLOCK_SCHEDULE_AND_FORK_COMPATIBILITY",
+    "chainId": 11155111,
+    "blockNumber": 12089271,
+    "blockHash": "0xdf6a1957dab21e3c227f8fce24de2f4f9c56e488b65848ab3d97a120b63e784f",
+    "rpc": "https://ethereum-sepolia-rpc.publicnode.com",
+    "manifestURL": "https://docs.squeekchain.com/assets/deployments/sepolia.json",
+    "manifestSha256": "219ef9a6fe40d483b43a82ff5e445313af2a3b88f0b324622ab528769a97d095",
+    "core": {
+      "proxy": "0xfd6c166d4b8e2962e65746a13e5a0797cd4de0c4",
+      "implementation": "0x6869d6102696243fd17013ab955d99cd0c522ad3",
+      "implementationRuntimeKeccak256": "0x65b5780a4fccafedeca1260806364d2bb512b4501c097253f792ae2839565a9c",
+      "publishedAbiSha256": "95d9ea6a90e68b7e3e124a111c9784d04fbe6a0d2b4e615757506d9fc6a04e91",
+      "interfaceFunctionsMatched": 5,
+      "settledThroughRound": 647,
+      "blockHeight": 3205
+    },
+    "mining": {
+      "proxy": "0x2dccb11fcc2defdd188555e45acb52231e82e218",
+      "implementation": "0x32639fc0bbd16ba0b140f78950751591609cfaa4",
+      "implementationRuntimeKeccak256": "0xbcc7179f61610f44cf19a8fe4ffe27c06cba083a9430eb2787c5807b30e1e959",
+      "publishedAbiSha256": "58456281e5ac038a2dae578087c0fc2ef0fe2bb0ec755f20ed4508514ec02807",
+      "interfaceFunctionsMatched": 5,
+      "startRound": 17,
+      "fundedBlocks": 3205,
+      "minted": "11776999093535297057799194"
+    },
+    "clockAndConfigurationMatchedManifest": {
+      "genesisTimestamp": 1793735400,
+      "roundDurationSeconds": 600,
+      "maxWorkPerRound": 10000,
+      "maxRoundsPerBatch": 16,
+      "initialWorkPerThousandBlocks": 10875,
+      "targetBlocksPerActiveRound": 40,
+      "difficultySmoothingRounds": 30,
+      "blockUnitsPerBlock": 1000000000,
+      "streamId": "0xa78faebd5aad38b4f90c7f61b9c5c10e8d9b9afe74ebfc2e82ca98b7e57ed562"
+    },
+    "explorerImplementationSourceInspection": "UNVERIFIED: Blockscout API returned HTTP 403 for both implementations",
+    "freshChecksRequiredBeforeDeploymentAndActivation": true
+  },
+  "audit": {
+    "suppliedReports": 6,
+    "coreObservationsReproduced": 6,
+    "factualCorrection": "Unregistered CHEESE and ETH deposits succeed without emission; only unconfigured sIMD deposits revert.",
+    "newCriticalOrHighIdentified": 0,
+    "independentAdmissionAudit": "PENDING",
+    "slitherRun": false,
+    "mythrilRun": false,
+    "residualBehaviors": [
+      "Owner may redirect prospective schedule-bounded emission through new pools",
+      "Remaining dust positions can receive retained withdrawal fees",
+      "Shares present at certification share that round without age weighting",
+      "Premature activation forfeits unconfigured sIMD emission on pull",
+      "Renouncing paused controller ownership makes pause irreversible"
+    ],
+    "proceduralMitigations": [
+      "Perform and verify the exact pending owner setup",
+      "Keep all emission inactive until real sIMD has been verified and set",
+      "Never renounce ownership"
+    ],
+    "details": "ADAPTATION.md"
+  },
+  "deployment": {
+    "performed": false,
+    "swarmJobURL": null,
+    "connectedRequesterWalletVerified": false,
+    "approvedOwnerTreasuryGuardianAndAllPremintRecipients": "0xdea11b3a70b77134424d436f6eb455f1abbd4449",
+    "chainId": 11155111,
+    "constructorValueWei": "0",
+    "realSIMDAsset": null,
+    "localCombinedPremintBalance": "210000000000000000000000000",
+    "livePremintBalance": null,
+    "emissionsActivated": false,
+    "operationalReadinessClaimed": false,
+    "pendingBeforeDeployment": [
+      "Authenticated connected requester wallet check by IMD",
+      "Exact Forge 1.8.5 reproduction per release manifest",
+      "Fresh external dependency and required source verification",
+      "Independent audit and factory admission checks",
+      "IMD manifest, simulation, deployment and confirmed receipts"
+    ],
+    "pendingAfterDeployment": [
+      "Five new addresses, transaction hashes, Etherscan links and source verification status",
+      "Live runtime immutable bindings, ownership and premint logs/balances",
+      "Owner bindToken, role verification, three pool registrations and allocation check",
+      "Verify real non-rebasing Sepolia sIMD, then owner setAsset",
+      "Fresh real-Core compatibility checks, then owner activation only"
+    ],
+    "runbook": "docs/OFFICIAL_SEPOLIA.md"
+  },
+  "authority": "Local contributor checks only; not an independent audit or IMD deployment attestation"
+}

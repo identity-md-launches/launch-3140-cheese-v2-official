@@ -1,4 +1,12 @@
-# CHEESE V2 — tested source for IMD Swarm GitHub import
+# CHEESE V2 — official Sepolia launch preparation
+
+Imported from `konrewz/cheese-vault-v2` at exactly
+`65924ab66aa6e2197d9a781220678c29553165cf`. Production Solidity, dependencies,
+compiler configuration, original tests and Solidity deployment scripts remain unchanged.
+This contribution prepares the five-contract IMD launch; it does not deploy it or
+activate emissions. See [the official launch runbook](docs/OFFICIAL_SEPOLIA.md),
+[adaptation and audit dispositions](ADAPTATION.md), and
+[current check results](release/official-sepolia-checks.json).
 
 Standalone Foundry project. Production Solidity, vendored dependencies, deployment
 Solidity scripts, tests, ABIs and compiler settings are byte-identical to tested
@@ -36,12 +44,13 @@ Mining is a read-only issuance oracle. Mock contracts under test/ are not launch
 All five bytecode hashes and immutable locations are in release/build-manifest.json.
 The audited contract bytecode templates must not change during import/adaptation.
 
-Configuration is intentionally unresolved in config/deployment-settings.template.json.
-Owner must be controlled by the Swarm requester. Treasury, Guardian, three immutable
-premint recipient choices and real non-rebasing sIMD require explicit confirmation.
-There is no root launch.json: the earlier version silently assigned Treasury and
-all premints to Owner. This package removes those unapproved defaults. Swarm must
-resolve a reviewed constructor manifest without changing production Solidity.
+The requester has explicitly approved `0xdea11b3a70b77134424d436f6eb455f1abbd4449`
+for Owner, Treasury, Guardian and all three premint recipients. These are now recorded
+in `config/deployment-settings.template.json`, together with the exact constructor
+order and dependencies. IMD must verify the connected requester wallet before launch.
+The real sIMD address remains unverified: deploy its farm unconfigured, and leave
+emissions inactive until the owner verifies and sets the asset. There is no root
+`launch.json`; the later IMD manifest step writes it from this reviewed configuration.
 
 script/Deploy.s.sol contains the exact tested deployment/wiring helpers. Its run()
 reads explicit environment configuration; do not invoke --broadcast during import.
@@ -53,3 +62,25 @@ The source has a 2.1B lifetime mint cap, SQK-matched issuance, 40/20/20/20 alloc
 and 15% withdrawal fee. Read docs/SECURITY.md for supported-asset assumptions and
 outage accounting. Coverage is measured, not 100% of all branches. Public release
 summary excludes private logs, wallet associations, funding records and raw traces.
+
+## Additional launch checks
+
+The new checks live outside the original audited input directories so those files
+and their checksum inventory remain intact. Use the project's existing Foundry
+configuration and the assignment's seed:
+
+```sh
+export FOUNDRY_FUZZ_SEED=0x6f82d1d53b505d6ef746b191e2c3e79934b75cda2ed6635445ac37d7c8f3f8e7
+forge build
+forge test
+python3 tools/verify_release.py --build
+FOUNDRY_TEST=checks/launch forge test
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s checks -v
+```
+
+The release verifier compares immutable offset groups without treating compiler AST
+node numbers as stable identifiers. It also checks all five creation and runtime
+template Keccak hashes. The launch rehearsal verifies actual bound runtime values,
+including every token permit cache, with the approved owner and Sepolia chain ID.
+`tools/verify_deployed.py` provides the corresponding read-only check once IMD
+supplies the five confirmed addresses; usage and outstanding gates are in the runbook.

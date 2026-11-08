@@ -1,17 +1,28 @@
 {
-  "status": "BLOCKED_UNCONFIRMED_DEPLOYMENT_CONFIGURATION",
+  "status": "PREPARED_NOT_DEPLOYED",
+  "importedCommit": "65924ab66aa6e2197d9a781220678c29553165cf",
   "chainId": 11155111,
-  "owner": null,
-  "ownerPolicy": "Verified wallet controlled by the Swarm requester; no test-wallet substitution",
-  "treasury": null,
-  "guardian": null,
+  "owner": "0xdea11b3a70b77134424d436f6eb455f1abbd4449",
+  "ownerPolicy": "Requester-approved address. IMD must verify the connected requester wallet equals this address before deployment; this file is not proof of wallet control.",
+  "treasury": "0xdea11b3a70b77134424d436f6eb455f1abbd4449",
+  "guardian": "0xdea11b3a70b77134424d436f6eb455f1abbd4449",
   "premintRecipients": {
-    "team": null,
-    "treasury": null,
-    "liquidity": null
+    "team": "0xdea11b3a70b77134424d436f6eb455f1abbd4449",
+    "treasury": "0xdea11b3a70b77134424d436f6eb455f1abbd4449",
+    "liquidity": "0xdea11b3a70b77134424d436f6eb455f1abbd4449"
   },
   "realSIMDAsset": null,
+  "simdPolicy": "Unverified. Omit setAsset at deployment. The owner must verify the real non-rebasing Sepolia sIMD before the irreversible setAsset call, and before activation.",
+  "activate": false,
+  "constructorValueWei": "0",
   "squeekCore": "0xfd6c166d4b8e2962e65746a13e5a0797cd4de0c4",
   "squeekMining": "0x2dccb11fcc2defdd188555e45acb52231e82e218",
-  "policy": "No hidden role defaults. Guardian initially equals constructor Owner. No deployment/activation until final role choices and real non-rebasing sIMD are verified. Mocks are test fixtures only."
+  "deploymentOrder": [
+    {"contract": "CheeseEmissionController", "constructorArgs": ["0xdea11b3a70b77134424d436f6eb455f1abbd4449", "0xfd6c166d4b8e2962e65746a13e5a0797cd4de0c4", "0xdea11b3a70b77134424d436f6eb455f1abbd4449"]},
+    {"contract": "CheeseToken", "constructorArgs": ["0xdea11b3a70b77134424d436f6eb455f1abbd4449", "0xdea11b3a70b77134424d436f6eb455f1abbd4449", "0xdea11b3a70b77134424d436f6eb455f1abbd4449", "$contract:CheeseEmissionController"]},
+    {"contract": "CheeseFarmERC20", "constructorArgs": ["0xdea11b3a70b77134424d436f6eb455f1abbd4449", "$contract:CheeseEmissionController", "$contract:CheeseToken"]},
+    {"contract": "CheeseFarmETH", "constructorArgs": ["0xdea11b3a70b77134424d436f6eb455f1abbd4449", "$contract:CheeseEmissionController"]},
+    {"contract": "CheeseFarmSIMD", "constructorArgs": ["0xdea11b3a70b77134424d436f6eb455f1abbd4449", "$contract:CheeseEmissionController"]}
+  ],
+  "policy": "Review data for the later IMD manifest step, not launch.json. Deploy exactly five new contracts with no wiring calls, no activation and no asset substitution. Guardian initially equals Owner. Do not renounce ownership. Stop deployment on bytecode drift, failed tests, failed source or dependency verification, or unresolved critical/high findings."
 }
